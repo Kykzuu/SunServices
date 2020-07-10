@@ -1,0 +1,10 @@
+¬Could not create an instance of type Microsoft.Extensions.Configuration.IConfiguration. Type is an interface or abstract class and cannot be instantiated. Path 'Providers'.îNewtonsoft.Json.JsonSerializationException: Could not create an instance of type Microsoft.Extensions.Configuration.IConfiguration. Type is an interface or abstract class and cannot be instantiated. Path 'Providers'.
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalReader.CreateNewObject(JsonReader reader, JsonObjectContract objectContract, JsonProperty containerMember, JsonProperty containerProperty, String id, Boolean& createdFromNonDefaultCreator)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalReader.CreateObject(JsonReader reader, Type objectType, JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, Object existingValue)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalReader.CreateValueInternal(JsonReader reader, Type objectType, JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, Object existingValue)
+   at Newtonsoft.Json.Serialization.JsonSerializerInternalReader.Deserialize(JsonReader reader, Type objectType, Boolean checkAdditionalContent)
+   at Newtonsoft.Json.JsonSerializer.DeserializeInternal(JsonReader reader, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.Deserialize(JsonReader reader, Type objectType)
+   at Newtonsoft.Json.JsonSerializer.Deserialize[T](JsonReader reader)
+   at SunServices.Helpers.FileDataHelper.Read[T](String name) in C:\Users\Jakub\source\repos\SunServices\SunServices\Helpers\FileDataHelper.cs:line 40
+   at SunServices.Program.Main(String[] args) in C:\Users\Jakub\source\repos\SunServices\SunServices\Program.cs:line 50
