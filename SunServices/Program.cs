@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SunServices.Functions;
 using SunServices.Functions.ClansChannels;
+using SunServices.Functions.PrivateChannels;
 using SunServices.Helpers;
 using TS3QueryLib.Net.Core;
 using TS3QueryLib.Net.Core.Server.Commands;
@@ -60,22 +61,56 @@ namespace SunServices
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddSingleton(sp => client);
-                    services.AddHostedService<UpdateServerName>();
-                    services.AddHostedService<RegisterUser>();
-                    services.AddHostedService<HelpChannel>();
+
+
+                    //Kanaly klanowe
+                    if (configuration.GetSection("ClansChannels:Enabled").Get<bool>())
+                    {
+                        services.AddHostedService<ClansChannelsCreate>();
+                        services.AddHostedService<ClansChannelsFuncs>();
+                        services.AddHostedService<ClansChannelsTimeData>();
+                    }
+
                     //Kanaly prywatne
-                    services.AddHostedService<PrivateChannelsCreate>();
-                    services.AddHostedService<PrivateChannelsUpdate>();
-                    services.AddHostedService<PrivateChannelsNumbering>();
-                    services.AddHostedService<PrivateChannelsDelete>();
-                    //
-                    //kanaly klanowe
-                    services.AddHostedService<ClansChannelsCreate>();
-                    services.AddHostedService<ClansChannelsFuncs>();
-                    services.AddHostedService<ClansChannelsTimeData>();
-                    services.AddHostedService<Banner>();
-                    services.AddHostedService<AdminsTimeSpend>();
-                    services.AddHostedService<ApiData>();
+                    if (configuration.GetSection("PrivateChannels:Enabled").Get<bool>())
+                    {
+                        services.AddHostedService<PrivateChannelsCreate>();
+                        services.AddHostedService<PrivateChannelsDelete>();
+                        services.AddHostedService<PrivateChannelsNumbering>();
+                        services.AddHostedService<PrivateChannelsUpdate>();
+                    }
+
+                    //Liczenie czasu administracji
+                    if (configuration.GetSection("AdminsTimeSpend:Enabled").Get<bool>())
+                    {
+                        services.AddHostedService<AdminsTimeSpend>();
+                    }
+
+                    //Banner
+                    if (configuration.GetSection("Banner:Enabled").Get<bool>())
+                    {
+                        services.AddHostedService<Banner>();
+                    }
+
+
+                    //kanal do kontaktu z botem
+                    if (configuration.GetSection("ContactChannel:Enabled").Get<bool>())
+                    {
+                        services.AddHostedService<ContactChannel>();
+                    }
+
+
+                    //Automatyczna rejestracja uzytkownikow
+                    if (configuration.GetSection("RegisterUser:Enabled").Get<bool>())
+                    {
+                        services.AddHostedService<RegisterUser>();
+                    }
+
+                    //Aktualizacja nazwy serwera o liczbe online
+                    if (configuration.GetSection("UpdateServerName:Enabled").Get<bool>())
+                    {
+                        services.AddHostedService<UpdateServerName>();
+                    }
                 })
                 .ConfigureLogging(logging =>
                 {

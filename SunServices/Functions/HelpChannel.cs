@@ -11,7 +11,7 @@ using TS3QueryLib.Net.Core.Common.Responses;
 using TS3QueryLib.Net.Core.Server.Commands;
 using TS3QueryLib.Net.Core.Server.Entitities;
 
-namespace SunServices
+namespace SunServices.Functions
 {
     public class HelpChannel : IHostedService, IDisposable
     {
@@ -29,7 +29,7 @@ namespace SunServices
         {
             _client = client;
             _logger = logger;
-            _helpchannelid = configuration.GetSection("HelpChannel:HelpChannelID").Get<uint>(); ;
+            _helpchannelid = configuration.GetSection("HelpChannel:HelpChannelID").Get<uint>();
             _adminsgroups = configuration.GetSection("HelpChannel:AdminGroups").Get<List<uint>>();
             _adminmessage = configuration.GetSection("HelpChannel:AdminMessage").Get<string>();
             _usermessage = configuration.GetSection("HelpChannel:UserMessage").Get<string>();

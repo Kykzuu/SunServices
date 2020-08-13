@@ -13,7 +13,7 @@ using TS3QueryLib.Net.Core;
 using TS3QueryLib.Net.Core.Server.Commands;
 using TS3QueryLib.Net.Core.Server.Entitities;
 
-namespace SunServices
+namespace SunServices.Functions.PrivateChannels
 {
     public class PrivateChannelsUpdate : IHostedService, IDisposable
     {
@@ -53,7 +53,9 @@ namespace SunServices
                 {
                     DateTimeOffset time = new GetDataFromTopic().Time(channel.Topic);
                     string UniqueId = new GetDataFromTopic().UniqueId(channel.Topic);
-                    string[] description = new ChannelInfoCommand(channel.ChannelId).Execute(_client).Description.Split("Wa¿ny do:");
+
+                    string nickname = new ClientGetNameFromUIdCommand(UniqueId).Execute(_client).NickName;
+
                     if (DateTimeOffset.Now > time.AddDays(-13) && time.Second != 0)
                     {
                         string channeltopic = Base64Helper.Encode(UniqueId + "|+" + DateTimeOffset.Now.AddDays(14).ToUnixTimeSeconds());
@@ -61,7 +63,7 @@ namespace SunServices
                             new ChannelModification
                             {
                                 Topic = channeltopic,
-                                Description = description.First() + String.Format("Wa¿ny do: [b]{0}[/b][/size] \n [hr] \n [center][img]{1}[/img][/center]", DateTime.Now.AddDays(14).ToString("dd.MM.yyyy HH:mm"), _channellogourl)
+                                Description = String.Format("[center][size=11] Kana³ Prywatny[/center] [size=10] \n W³aœciciel kana³u: [b][URL=client://0/{0}~{1}]{1}[/URL][/b] \n Stworzony dnia: [b]{2}[/b] \n Wa¿ny do: [b]{3}[/b][/size] \n [hr] \n [center][img]{4}[/img][/center]", UniqueId, nickname, new GetDataFromTopic().CreatedDate(channel.Topic).ToString("dd.MM.yyyy HH:mm"), DateTime.Now.AddDays(14).ToString("dd.MM.yyyy HH:mm"), _channellogourl),
                             }).ExecuteAsync(_client);
                         _logger.LogInformation("[PrivateChannels] Updated expiration time for {0} ({1})", channel.ChannelId, channel.Name);
                     }

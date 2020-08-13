@@ -13,7 +13,7 @@ using TS3QueryLib.Net.Core.Common.Responses;
 using TS3QueryLib.Net.Core.Server.Commands;
 using TS3QueryLib.Net.Core.Server.Entitities;
 
-namespace SunServices
+namespace SunServices.Functions
 {
     public class Banner : IHostedService, IDisposable
     {
@@ -34,20 +34,15 @@ namespace SunServices
             _pingTextLocationList = configuration.GetSection("Banner:pingTextLocation").Get<List<Single>>();
             _onlineLocationList = configuration.GetSection("Banner:onlineLocation").Get<List<Single>>();
             _pingLocationList = configuration.GetSection("Banner:pingLocation").Get<List<Single>>();
-            _enabled = configuration.GetSection("Banner:enabled").Get<bool>();
 
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            if (_enabled)
-            {
-                _logger.LogInformation("Banner Background Service is starting.");
-                _timer = new Timer(DoWork, null, TimeSpan.Zero,
-                    TimeSpan.FromSeconds(60));
+            _logger.LogInformation("Banner Background Service is starting.");
+            _timer = new Timer(DoWork, null, TimeSpan.Zero,
+                TimeSpan.FromSeconds(60));
 
-                return Task.CompletedTask;
-            }
             return Task.CompletedTask;
         }
 

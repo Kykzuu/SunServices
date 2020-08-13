@@ -14,7 +14,7 @@ using TS3QueryLib.Net.Core.Common.Responses;
 using TS3QueryLib.Net.Core.Server.Commands;
 using TS3QueryLib.Net.Core.Server.Entitities;
 
-namespace SunServices
+namespace SunServices.Functions.PrivateChannels
 {
     public class PrivateChannelsCreate : IHostedService, IDisposable
     {
@@ -34,10 +34,10 @@ namespace SunServices
             _logger = logger;
             _privatezonechannelid = configuration.GetSection("PrivateChannels:ZoneChannelID").Get<uint>();
             _channellogourl = configuration.GetSection("PrivateChannels:LogoURL").Get<string>();
-            _subchannels = configuration.GetSection("PrivateChannels:SubChannels").Get<int>(); ;
-            _createchannelmessage = configuration.GetSection("PrivateChannels:CreateChannelMessage").Get<string>(); ;
-            _createchannel = configuration.GetSection("PrivateChannels:AutoCreateChannelID").Get<uint>(); ;
-            _channeladmingroup = configuration.GetSection("PrivateChannels:ChannelAdminGroup").Get<uint>(); ;
+            _subchannels = configuration.GetSection("PrivateChannels:SubChannels").Get<int>();
+            _createchannelmessage = configuration.GetSection("PrivateChannels:CreateChannelMessage").Get<string>();
+            _createchannel = configuration.GetSection("PrivateChannels:AutoCreateChannelID").Get<uint>();
+            _channeladmingroup = configuration.GetSection("PrivateChannels:ChannelAdminGroup").Get<uint>();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -56,7 +56,7 @@ namespace SunServices
             IEnumerable<ClientListEntry> privatechannelsusers = Users.Values.Where(x => x.ChannelId == _createchannel);
             if (privatechannelsusers.Count() == 1)
             {
-                string channeltopic = Base64Helper.Encode(privatechannelsusers.First().ClientUniqueId + "|+" + DateTimeOffset.Now.AddDays(14).ToUnixTimeSeconds());
+                string channeltopic = Base64Helper.Encode(privatechannelsusers.First().ClientUniqueId + "|+" + DateTimeOffset.Now.AddDays(14).ToUnixTimeSeconds() + "|+" + DateTimeOffset.Now.ToUnixTimeSeconds());
                 EntityListCommandResponse<ChannelListEntry> channels = new ChannelListCommand(includeAll: true, includeTopics: true).Execute(_client);
 
                 if (!channels.Values.Any(x => new GetDataFromTopic().UniqueId(x.Topic) == privatechannelsusers.First().ClientUniqueId))

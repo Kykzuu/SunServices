@@ -17,18 +17,30 @@ using TS3QueryLib.Net.Core.Common.Responses;
 using TS3QueryLib.Net.Core.Server.Commands;
 using TS3QueryLib.Net.Core.Server.Entitities;
 
-namespace SunServices
+namespace SunServices.Functions.ClansChannels
 {
     public class ClansChannelsCreate : IHostedService, IDisposable
     {
         private readonly ILogger<ClansChannelsCreate> _logger;
         private readonly IQueryClient _client;
+        private uint _createchannel;
+        private uint _templategroupid;
+        private uint _zonechannelid;
+        private uint _clanadmingroup;
+        private int _subchannels;
+        private string _channellogourl;
         private Timer _timer;
 
         public ClansChannelsCreate(ILogger<ClansChannelsCreate> logger, IQueryClient client, IConfiguration configuration)
         {
             _client = client;
             _logger = logger;
+            _createchannel = configuration.GetSection("ClansChannels:AutoCreateChannelID").Get<uint>();
+            _templategroupid = configuration.GetSection("ClansChannels:TemplateGroupID").Get<uint>();
+            _zonechannelid = configuration.GetSection("ClansChannels:ZoneChannelID").Get<uint>();
+            _subchannels = configuration.GetSection("ClansChannels:SubChannels").Get<int>();
+            _clanadmingroup = configuration.GetSection("ClansChannels:ClanAdminGroup").Get<uint>();
+            _channellogourl = configuration.GetSection("ClansChannels:LogoURL").Get<string>();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -44,12 +56,12 @@ namespace SunServices
         private void DoWork(object state)
         {
             EntityListCommandResponse<ClientListEntry> Users = new ClientListCommand(includeGroupInfo: true, includeUniqueId: true).Execute(_client);
-            IEnumerable<ClientListEntry> clanschannelusers = Users.Values.Where(x => x.ChannelId == 22394);
+            IEnumerable<ClientListEntry> clanschannelusers = Users.Values.Where(x => x.ChannelId == _createchannel);
             if (clanschannelusers.Count() == 1)
             {
                 Regex rg = new Regex(@"^\[spacer_.KK_.[0-9]*\]\.\.\.");
                 IEnumerable<ChannelListEntry> ClansSpacerChannels = new ChannelListCommand(includeAll: true, includeTopics: true).Execute(_client).Values.Where(x => rg.Match(x.Name).Success);
-                new ServerGroupCopyCommand(26503, $"Klan #{ClansSpacerChannels.Count()+1}", TS3QueryLib.Net.Core.Common.Entities.GroupDatabaseType.Regular).Execute(_client);
+                new ServerGroupCopyCommand(_templategroupid, $"Klan #{ClansSpacerChannels.Count()+1}", TS3QueryLib.Net.Core.Common.Entities.GroupDatabaseType.Regular).Execute(_client);
                 uint ServerGroupCreatedId = new ServerGroupListCommand().Execute(_client).Values.Where(x => x.Name == $"Klan #{ClansSpacerChannels.Count() + 1}").First().Id;
                 ClansDataModel clanDataModel = new ClansDataModel()
                 {
@@ -79,7 +91,7 @@ namespace SunServices
                 uint NewChannelOrder;
                 if(ClansSpacerChannels.Count() == 0)
                 {
-                    NewChannelOrder = 72313;
+                    NewChannelOrder = _zonechannelid;
                 }
                 else
                 {
@@ -92,7 +104,7 @@ namespace SunServices
                         ChannelOrder = NewChannelOrder,
                         Topic = datetime,
                         IsPermanent = true,
-                        Description = $"[center][size=11] Kanał Klanowy[/center] [size=10] \n Lider: [b][URL=client://0/{clanDataModel.Owner.UniqueID}~{clanschannelusers.First().Nickname}]{clanschannelusers.First().Nickname}[/URL][/b]\n Stworzony dnia: [b]{clanDataModel.CreatedDate.ToString("dd.MM.yyyy HH:mm")}[/b]\n Spędzony czas:\n    {clanDataModel.ActivityTime.First().Date.ToString("MM.yyyy")} - [b]0h[/b] [/size] \n [hr] [center][img]https://sunnight.pl/PrivateChannelsLogo.png[/img][/center][size=1] {Base64Helper.Encode(output)}",
+                        Description = $"[center][size=11] Kanał Klanowy[/center] [size=10] \n Lider: [b][URL=client://0/{clanDataModel.Owner.UniqueID}~{clanschannelusers.First().Nickname}]{clanschannelusers.First().Nickname}[/URL][/b]\n Stworzony dnia: [b]{clanDataModel.CreatedDate.ToString("dd.MM.yyyy HH:mm")}[/b]\n Spędzony czas:\n    {clanDataModel.ActivityTime.First().Date.ToString("MM.yyyy")} - [b]0h[/b] [/size] \n [hr] [center][img]{_channellogourl}[/img][/center][size=1] {Base64Helper.Encode(output)}",
                         Name = Truncate(String.Format("[cspacer]Kanał klanowy {0}", ClansSpacerChannels.Count() + 1), 40),
                         MaxClients = 0
                     }
@@ -100,7 +112,7 @@ namespace SunServices
 
                     channels = new ChannelListCommand(includeAll: true, includeTopics: true).Execute(_client);
                     ChannelListEntry createdchannel = channels.Values.Where(x => x.Topic == datetime).First();
-                    new SetClientChannelGroupCommand(35, createdchannel.ChannelId, clanschannelusers.First().ClientDatabaseId).ExecuteAsync(_client);
+                    new SetClientChannelGroupCommand(_clanadmingroup, createdchannel.ChannelId, clanschannelusers.First().ClientDatabaseId).ExecuteAsync(_client);
 
                 new ChannelCreateCommand(
                     new ChannelModification
@@ -146,7 +158,7 @@ namespace SunServices
                         }
                         ).Execute(_client);
 
-                for (int i = 2; i < 9 + 2; i++)
+                for (int i = 2; i < _subchannels + 2; i++)
                 {
                     new ChannelCreateCommand(
                         new ChannelModification

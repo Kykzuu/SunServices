@@ -14,7 +14,7 @@ using TS3QueryLib.Net.Core.Server.Commands;
 using TS3QueryLib.Net.Core.Server.Entitities;
 using TS3QueryLib.Net.Core.Server.Responses;
 
-namespace SunServices
+namespace SunServices.Functions
 {
     public class UpdateServerName : IHostedService, IDisposable
     {

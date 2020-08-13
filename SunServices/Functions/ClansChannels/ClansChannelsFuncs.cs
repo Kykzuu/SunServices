@@ -19,7 +19,7 @@ using TS3QueryLib.Net.Core.Server.Commands;
 using TS3QueryLib.Net.Core.Server.Entitities;
 using TS3QueryLib.Net.Core.Server.Responses;
 
-namespace SunServices
+namespace SunServices.Functions.ClansChannels
 {
     public class ClansChannelsFuncs : IHostedService, IDisposable
     {
@@ -55,7 +55,7 @@ namespace SunServices
             foreach (ChannelListEntry clan in ClansSpacerChannels)
             {
                 IEnumerable<ChannelListEntry> FuncChannels = Channels.Where(x => x.ParentChannelId == Channels.Where(x => x.ParentChannelId == clan.ChannelId).First().ChannelId);
-                if(FuncChannels.Count() == 3)
+                if(FuncChannels.Count() >= 3)
                 {
                     ClansDataModel clanData = JsonConvert.DeserializeObject<ClansDataModel>(Base64Helper.Decode(new ChannelInfoCommand(clan.ChannelId).Execute(_client).Description.Split("[size=1]").Last()));
                     foreach (ClientListEntry addChannelUser in Users.Values.Where(x => x.ChannelId == FuncChannels.Where(x => x.Topic == "ADD").First().ChannelId))

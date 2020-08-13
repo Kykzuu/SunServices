@@ -11,7 +11,7 @@ using TS3QueryLib.Net.Core;
 using TS3QueryLib.Net.Core.Server.Commands;
 using TS3QueryLib.Net.Core.Server.Entitities;
 
-namespace SunServices
+namespace SunServices.Functions.PrivateChannels
 {
     public class PrivateChannelsDelete : IHostedService, IDisposable
     {
