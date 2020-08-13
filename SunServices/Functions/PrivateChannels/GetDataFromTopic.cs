@@ -26,7 +26,25 @@ namespace SunServices.Functions.PrivateChannels
                 string[] UniqueId = encode.Split("|+");
                 try
                 {
-                    return DateTimeOffset.FromUnixTimeSeconds(long.Parse(UniqueId.Last()));
+                    return DateTimeOffset.FromUnixTimeSeconds(long.Parse(UniqueId[1]));
+                }
+                catch (Exception)
+                {
+                    return DateTime.Now;
+                }
+            }
+            return DateTime.Now;
+        }
+
+        public DateTimeOffset CreatedDate(string topic)
+        {
+            if (topic != null)
+            {
+                string encode = Base64Helper.Decode(topic);
+                string[] UniqueId = encode.Split("|+");
+                try
+                {
+                    return DateTimeOffset.FromUnixTimeSeconds(long.Parse(UniqueId[2]));
                 }
                 catch (Exception)
                 {

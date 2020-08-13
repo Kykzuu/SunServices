@@ -99,6 +99,11 @@ namespace SunServices
                         services.AddHostedService<ContactChannel>();
                     }
 
+                    //Kanal automatycznej pomocy
+                    if (configuration.GetSection("HelpChannel:Enabled").Get<bool>())
+                    {
+                        services.AddHostedService<HelpChannel>();
+                    }
 
                     //Automatyczna rejestracja uzytkownikow
                     if (configuration.GetSection("RegisterUser:Enabled").Get<bool>())
