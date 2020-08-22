@@ -43,7 +43,7 @@ namespace SunServices.Functions.ClansChannels
             return Task.CompletedTask;
         }
 
-        private void DoWork(object state)
+        private async void DoWork(object state)
         {
             Regex rg = new Regex(@"^.KK_.[0-9]*");
             IEnumerable<ChannelListEntry> Channels = new ChannelListCommand(includeAll: true, includeTopics: true).Execute(_client).Values;
@@ -61,7 +61,7 @@ namespace SunServices.Functions.ClansChannels
                     foreach (ClientListEntry addChannelUser in Users.Values.Where(x => x.ChannelId == FuncChannels.Where(x => x.Topic == "ADD").First().ChannelId))
                     {
                         if(!addChannelUser.ServerGroups.Any(x => allClansData.Any(z => z.GroupID == x))){
-                            new ServerGroupAddClientCommand(clanData.GroupID, addChannelUser.ClientDatabaseId).ExecuteAsync(_client);
+                            await new ServerGroupAddClientCommand(clanData.GroupID, addChannelUser.ClientDatabaseId).ExecuteAsync(_client);
                         }
                     }
 
@@ -69,7 +69,7 @@ namespace SunServices.Functions.ClansChannels
                     {
                         if (deleteChannelUser.ClientDatabaseId != clanData.Owner.DatabaseID)
                         {
-                            new ServerGroupDelClientCommand(clanData.GroupID, deleteChannelUser.ClientDatabaseId).ExecuteAsync(_client);
+                            await new ServerGroupDelClientCommand(clanData.GroupID, deleteChannelUser.ClientDatabaseId).ExecuteAsync(_client);
                         }
                     }
 
@@ -87,7 +87,7 @@ namespace SunServices.Functions.ClansChannels
 
 
                     string desc = String.Concat(descriptions[0], descriptions[1], descriptions[2]);
-                    new ChannelEditCommand(FuncChannels.Where(x => x.Topic == "ONLINE").First().ChannelId, new ChannelModification
+                    await new ChannelEditCommand(FuncChannels.Where(x => x.Topic == "ONLINE").First().ChannelId, new ChannelModification
                     {
                         Name = $"Obecnie online: {Users.Values.Where(x => x.ServerGroups.Any(x => x == clanData.GroupID)).Count()}/{rankusers.Count()}",
                         Description = desc

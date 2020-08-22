@@ -41,7 +41,7 @@ namespace SunServices.Functions.PrivateChannels
             return Task.CompletedTask;
         }
 
-        private void DoWork(object state)
+        private async void DoWork(object state)
         {
             IEnumerable<ChannelListEntry> AllChannels = new ChannelListCommand(includeAll: true, includeTopics: true).Execute(_client).Values; ;
             IEnumerable<ChannelListEntry> Channels = AllChannels.Where(x => x.ParentChannelId == _privatezonechannelid);
@@ -59,7 +59,7 @@ namespace SunServices.Functions.PrivateChannels
                     if (DateTimeOffset.Now > time.AddDays(-13) && time.Second != 0)
                     {
                         string channeltopic = Base64Helper.Encode(UniqueId + "|+" + DateTimeOffset.Now.AddDays(14).ToUnixTimeSeconds());
-                        new ChannelEditCommand(channel.ChannelId,
+                        await new ChannelEditCommand(channel.ChannelId,
                             new ChannelModification
                             {
                                 Topic = channeltopic,

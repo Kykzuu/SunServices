@@ -41,7 +41,7 @@ namespace SunServices.Functions.ClansChannels
             return Task.CompletedTask;
         }
 
-        private void DoWork(object state)
+        private async void DoWork(object state)
         {
             Regex rg = new Regex(@"^.KK_.[0-9]*");
             IEnumerable<ChannelListEntry> Channels = new ChannelListCommand(includeAll: true, includeTopics: true).Execute(_client).Values;
@@ -72,7 +72,7 @@ namespace SunServices.Functions.ClansChannels
                 }
                 descriptionbuilder2[1] = $"[hr]\n[center][img]https://sunnight.pl/PrivateChannelsLogo.png[/img][/center][size=1]\n{Base64Helper.Encode(output)}";
                 string enddesc = String.Concat(descriptionbuilder[0] + "Spêdzony czas:" +descriptionbuilder2[0] + "[/size]" + descriptionbuilder2[1]);
-                new ChannelEditCommand(clan.ChannelId, new ChannelModification
+                await new ChannelEditCommand(clan.ChannelId, new ChannelModification
                 {
                     Description = enddesc
                 }).ExecuteAsync(_client);

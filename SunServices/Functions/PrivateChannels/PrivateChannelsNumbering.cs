@@ -37,7 +37,7 @@ namespace SunServices.Functions.PrivateChannels
             return Task.CompletedTask;
         }
 
-        private void DoWork(object state)
+        private async void DoWork(object state)
         {
             IEnumerable<ChannelListEntry> Channels = new ChannelListCommand(includeAll: true, includeTopics: true).Execute(_client).Values.Where(x => x.ParentChannelId == _privatezonechannelid);
 
@@ -51,13 +51,13 @@ namespace SunServices.Functions.PrivateChannels
                     string[] name = channel.Name.Split(". ");
                     if (name.First() != i.ToString())
                     {
-                        new ChannelEditCommand(channel.ChannelId, new ChannelModification { Name = i + ". " + name.Last() }).ExecuteAsync(_client);
+                        await new ChannelEditCommand(channel.ChannelId, new ChannelModification { Name = i + ". " + name.Last() }).ExecuteAsync(_client);
                         _logger.LogInformation("[PrivateChannels] Fixed numbering for channel {0} ({1})", channel.ChannelId, channel.Name);
                     }
                 }
                 else
                 {
-                    new ChannelEditCommand(channel.ChannelId, new ChannelModification { Name = i + ". Naruszenie numeracji" }).ExecuteAsync(_client);
+                    await new ChannelEditCommand(channel.ChannelId, new ChannelModification { Name = i + ". Naruszenie numeracji" }).ExecuteAsync(_client);
                     _logger.LogInformation("[PrivateChannels] Fixed numbering for channel {0} ({1})", channel.ChannelId, channel.Name);
                 }
                 i++;

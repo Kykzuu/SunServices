@@ -18,7 +18,7 @@ namespace SunServices.Functions
 {
     public class Commands
     {
-        public static void ClientMessage_ReceivedFromClient(object sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
+        public static async void ClientMessage_ReceivedFromClient(object sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
         {
             uint botid = new WhoAmICommand().Execute((IQueryClient)sender).ClientId;
             if (botid != e.InvokerClientId)
@@ -58,7 +58,7 @@ namespace SunServices.Functions
                         }
                         else
                         {
-                            new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Nie masz do tego uprawnień").ExecuteAsync((IQueryClient)sender);
+                            await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Nie masz do tego uprawnień").ExecuteAsync((IQueryClient)sender);
                         }
                     }
                     //
@@ -71,20 +71,20 @@ namespace SunServices.Functions
                     }
                     else
                     {
-                        new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Nie ma takiej komendy lub nie masz do tego uprawnień").ExecuteAsync((IQueryClient)sender);
+                        await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Nie ma takiej komendy lub nie masz do tego uprawnień").ExecuteAsync((IQueryClient)sender);
                     }
                     //
 
                 }
                 catch (Exception)
                 {
-                    new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Nieznana komenda. Wpisz [b]pomoc[/b] po więcej informacji").ExecuteAsync((IQueryClient)sender);
+                    await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Nieznana komenda. Wpisz [b]pomoc[/b] po więcej informacji").ExecuteAsync((IQueryClient)sender);
                 }
             }
         }
 
         #region pomoc
-        public static void pomoc(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
+        public static async void pomoc(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
         {
             string tekst = "[b]Dostępne komendy:[/b] \n" +
                 "grouplist [b]--[/b] wyświetla wszystkie możliwe do nadania grupy wraz z ID \n" +
@@ -112,13 +112,13 @@ namespace SunServices.Functions
                 }
             }
 
-            new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, tekst).ExecuteAsync(sender);
+            await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, tekst).ExecuteAsync(sender);
 
         }
         #endregion
 
         #region grouplist
-        public static void grouplist(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
+        public static async void grouplist(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
         {
             IConfiguration configuration = new ConfigurationBuilder()
                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
@@ -136,7 +136,7 @@ namespace SunServices.Functions
                 {
                     text = String.Concat(text + $"\n{serverGroups.Values.Where(x => x.Id == uint.Parse(ranga)).First().Name} - {ranga}");
                 }
-                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, text).ExecuteAsync(sender);
+                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, text).ExecuteAsync(sender);
             }
         }
 
@@ -145,7 +145,7 @@ namespace SunServices.Functions
         #endregion
 
         #region groupadd
-        public static void groupadd(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
+        public static async void groupadd(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
         {
             IConfiguration configuration = new ConfigurationBuilder()
                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
@@ -168,13 +168,13 @@ namespace SunServices.Functions
                         if(group[1].Any(x => x == args[1]))
                         {
                             if(i < int.Parse(group[0][0])){
-                                new ServerGroupAddClientCommand(uint.Parse(args[1]), client.DatabaseId).ExecuteAsync(sender);
-                                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Sukces").ExecuteAsync(sender);
+                                await new ServerGroupAddClientCommand(uint.Parse(args[1]), client.DatabaseId).ExecuteAsync(sender);
+                                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Sukces").ExecuteAsync(sender);
                                 return;
                             }
                             else
                             {
-                                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, $"Możesz mieć maksymalnie {group[0][0]} {group[0][1]}").ExecuteAsync(sender);
+                                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, $"Możesz mieć maksymalnie {group[0][0]} {group[0][1]}").ExecuteAsync(sender);
                                 return;
                             }
                         }
@@ -183,12 +183,12 @@ namespace SunServices.Functions
                 }
                 else
                 {
-                    new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Ta grupa nie istnieje. Wpisz [b]grouplist[/b] by zobaczyć listę dostępnych grup").ExecuteAsync(sender);
+                    await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Ta grupa nie istnieje. Wpisz [b]grouplist[/b] by zobaczyć listę dostępnych grup").ExecuteAsync(sender);
                 }
             }
             else
             {
-                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: groupadd [i]{group_id}[/i]").ExecuteAsync(sender);
+                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: groupadd [i]{group_id}[/i]").ExecuteAsync(sender);
             }
         }
 
@@ -197,7 +197,7 @@ namespace SunServices.Functions
         #endregion
 
         #region groupdel
-        public static void groupdel(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
+        public static async void groupdel(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
         {
             IConfiguration configuration = new ConfigurationBuilder()
                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
@@ -210,17 +210,17 @@ namespace SunServices.Functions
 
                 if (groups.Any(x => x[1].Any(z => z == args[1])))
                 {
-                    new ServerGroupDelClientCommand(uint.Parse(args[1]), new ClientGetDbIdFromUIdCommand(e.InvokerUniqueId).Execute(sender).Values.First()).Execute(sender);
-                    new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Sukces").ExecuteAsync(sender);
+                    await new ServerGroupDelClientCommand(uint.Parse(args[1]), new ClientGetDbIdFromUIdCommand(e.InvokerUniqueId).Execute(sender).Values.First()).ExecuteAsync(sender);
+                    await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Sukces").ExecuteAsync(sender);
                 }
                 else
                 {
-                    new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Ta grupa nie istnieje. Wpisz [b]grouplist[/b] by zobaczyć listę dostępnych grup").ExecuteAsync(sender);
+                    await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Ta grupa nie istnieje. Wpisz [b]grouplist[/b] by zobaczyć listę dostępnych grup").ExecuteAsync(sender);
                 }
             }
             else
             {
-                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: groupadd [i]{group_id}[/i]").ExecuteAsync(sender);
+                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: groupadd [i]{group_id}[/i]").ExecuteAsync(sender);
             }
         }
 
@@ -229,7 +229,7 @@ namespace SunServices.Functions
         #endregion
 
         #region protectchannel
-        public static void protectchannel(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
+        public static async void protectchannel(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
         {
             if (args.Length == 2)
             {
@@ -242,30 +242,30 @@ namespace SunServices.Functions
                     string desc = new ChannelInfoCommand(channel.ChannelId).Execute(sender).Description;
                     string[] description = desc.Split("Ważny do:");
                     string channellogourl = desc.Split("[img]").Last();
-                    new ChannelEditCommand(channel.ChannelId,
+                    await new ChannelEditCommand(channel.ChannelId,
                         new ChannelModification
                         {
                             Topic = protectedchanneltopic,
                             Description = description.First() + String.Format("Ważny do: [b]{0}[/b][/size] \n [hr] \n [center][img]{1}", "bezterminowo", channellogourl)
                         }).ExecuteAsync(sender);
-                    new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Sukces").ExecuteAsync(sender);
+                    await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Sukces").ExecuteAsync(sender);
 
                 }
                 catch (Exception)
                 {
-                    new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: ProtectChannel [i]{channelid}[/i]").ExecuteAsync(sender);
+                    await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: ProtectChannel [i]{channelid}[/i]").ExecuteAsync(sender);
                 }
             }
             else
             {
-                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: ProtectChannel [i]{channelid}[/i]").ExecuteAsync(sender);
+                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: ProtectChannel [i]{channelid}[/i]").ExecuteAsync(sender);
             }
 
         }
         #endregion
 
         #region unprotectchannel
-        public static void unprotectchannel(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
+        public static async void unprotectchannel(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
         {
             if (args.Length == 2)
             {
@@ -275,29 +275,29 @@ namespace SunServices.Functions
                     ChannelListEntry channel = AllChannels.Where(x => x.ChannelId == uint.Parse(args[1])).First();
                     string UniqueId = new GetDataFromTopic().UniqueId(channel.Topic);
                     string protectedchanneltopic = Base64Helper.Encode(UniqueId + "|+" + DateTimeOffset.Now.AddDays(3).ToUnixTimeSeconds() + "|+" + new GetDataFromTopic().CreatedDate(channel.Topic).ToUnixTimeSeconds());
-                    new ChannelEditCommand(channel.ChannelId,
+                    await new ChannelEditCommand(channel.ChannelId,
                         new ChannelModification
                         {
                             Topic = protectedchanneltopic
                         }).ExecuteAsync(sender);
-                    new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Sukces").ExecuteAsync(sender);
+                    await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Sukces").ExecuteAsync(sender);
 
                 }
                 catch (Exception)
                 {
-                    new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: ProtectChannel [i]{channelid}[/i]").ExecuteAsync(sender);
+                    await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: ProtectChannel [i]{channelid}[/i]").ExecuteAsync(sender);
                 }
             }
             else
             {
-                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: ProtectChannel [i]{channelid}[/i]").ExecuteAsync(sender);
+                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: ProtectChannel [i]{channelid}[/i]").ExecuteAsync(sender);
             }
 
         }
         #endregion
 
         #region showprotectedchannels
-        public static void showprotectedchannels(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
+        public static async void showprotectedchannels(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
         {
             try
             {
@@ -305,21 +305,21 @@ namespace SunServices.Functions
                 IEnumerable<ChannelListEntry> Channels = AllChannels.Where(x => new GetDataFromTopic().Time(x.Topic).ToUnixTimeSeconds() == 0);
                 foreach (ChannelListEntry channelListEntry in Channels)
                 {
-                    new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, $"{channelListEntry.Name} ( {channelListEntry.ChannelId} )").Execute(sender);
+                    await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, $"{channelListEntry.Name} ( {channelListEntry.ChannelId} )").ExecuteAsync(sender);
                 }
-                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Sukces").ExecuteAsync(sender);
+                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Sukces").ExecuteAsync(sender);
 
             }
             catch (Exception)
             {
-                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: ProtectChannel [i]{channelid}[/i]").ExecuteAsync(sender);
+                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: ProtectChannel [i]{channelid}[/i]").ExecuteAsync(sender);
             }
 
         }
         #endregion
 
         #region extendchannelexpiration
-        public static void extendchannelexpiration(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
+        public static async void extendchannelexpiration(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
         {
             if (args.Length == 3)
             {
@@ -334,30 +334,30 @@ namespace SunServices.Functions
                     string desc = new ChannelInfoCommand(channel.ChannelId).Execute(sender).Description;
                     string[] description = desc.Split("Ważny do:");
                     string channellogourl = desc.Split("[img]").Last();
-                    new ChannelEditCommand(channel.ChannelId,
+                    await new ChannelEditCommand(channel.ChannelId,
                         new ChannelModification
                         {
                             Topic = topic,
                             Description = description.First() + String.Format("Ważny do: [b]{0}[/b][/size] \n [hr] \n [center][img]{1}", newtime.ToString("dd.MM.yyyy HH:mm"), channellogourl)
                         }).ExecuteAsync(sender);
-                    new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Sukces").ExecuteAsync(sender);
+                    await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Sukces").ExecuteAsync(sender);
 
                 }
                 catch (Exception)
                 {
-                    new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: ExtendChannelExpiration [i]{channelid} {days}[/i]").ExecuteAsync(sender);
+                    await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: ExtendChannelExpiration [i]{channelid} {days}[/i]").ExecuteAsync(sender);
                 }
             }
             else
             {
-                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: ExtendChannelExpiration [i]{channelid} {days}[/i]").ExecuteAsync(sender);
+                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: ExtendChannelExpiration [i]{channelid} {days}[/i]").ExecuteAsync(sender);
             }
 
         }
         #endregion
 
         #region pwall
-        public static void pwall(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
+        public static async void pwall(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
         {
             if (args.Length >= 2)
             {
@@ -367,29 +367,29 @@ namespace SunServices.Functions
                         args[0] = null;
                         foreach (ClientListEntry client in Users.Values)
                         {
-                            new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, client.ClientId, string.Join(" ", args)).ExecuteAsync(sender);
+                            await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, client.ClientId, string.Join(" ", args)).ExecuteAsync(sender);
                         }
 
-                    new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Sukces").ExecuteAsync(sender);
+                    await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Sukces").ExecuteAsync(sender);
 
                 }
                 catch (Exception)
                 {
-                    new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: pwall [i]{message}[/i]").ExecuteAsync(sender);
+                    await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: pwall [i]{message}[/i]").ExecuteAsync(sender);
                 }
             }
             else
             {
-                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: pwall [i]{message}[/i]").ExecuteAsync(sender);
+                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: pwall [i]{message}[/i]").ExecuteAsync(sender);
             }
 
         }
         #endregion
 
         #region alladminstime
-        public static void alladminstime(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
+        public static async void alladminstime(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
         {
-            new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "[b]Spędzony przez administracje czas:[/b]").ExecuteAsync(sender);
+            new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "[b]Spędzony przez administracje czas:[/b]").Execute(sender);
             List<AdminsTimeSpend.AdminsTimeModel> loadData = FileDataHelper.Read<List<AdminsTimeSpend.AdminsTimeModel>>("AdminsTimeSpend");
             foreach (AdminsTimeSpend.AdminsTimeModel admin in loadData)
             {
@@ -398,14 +398,14 @@ namespace SunServices.Functions
                     $"Ostatnie 7 dni: {admin.Time.Skip(Math.Max(0, admin.Time.Count() - 7)).Sum(x => x.Time) / 3600} godzin \n" +
                     $"Ostatnie 30 dni: {admin.Time.Skip(Math.Max(0, admin.Time.Count() - 30)).Sum(x => x.Time) / 3600} godzin \n" +
                     $"Łącznie: {admin.Time.Sum(x => x.Time) / 3600} godzin \n";
-                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, info).ExecuteAsync(sender);
+                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, info).ExecuteAsync(sender);
             }
-
+            await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Sukces").ExecuteAsync(sender);
         }
         #endregion
 
         #region admintime
-        public static void admintime(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
+        public static async void admintime(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
         {
             if(args.Length >= 3)
             {
@@ -424,46 +424,46 @@ namespace SunServices.Functions
                             info = $"[b]{admin.Nickname} ( {admin.AdminDatabaseId} )[/b] \n" +
                             $"Spędzony czas w tym dniu: {time / 3600} godzin ({time / 60} minut)";
                         }
-                        new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, info).ExecuteAsync(sender);
+                        await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, info).ExecuteAsync(sender);
 
                     }
                     catch
                     {
-                        new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Podana data jest nieprawidłowa").ExecuteAsync(sender);
+                        await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Podana data jest nieprawidłowa").ExecuteAsync(sender);
                     }
                 }
                 else
                 {
-                    new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Taki użytkownik nie istnieje lub nie jest rejestrowany").ExecuteAsync(sender);
+                    await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Taki użytkownik nie istnieje lub nie jest rejestrowany").ExecuteAsync(sender);
                 }
             }
             else
             {
-                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: AdminTime [i]{nickname} {dd/mm/rrrr}[/i]").ExecuteAsync(sender);
+                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Poprawne użycie: AdminTime [i]{nickname} {dd/mm/rrrr}[/i]").ExecuteAsync(sender);
             }
 
         }
         #endregion
 
         #region myadmintime
-        public static void myadmintime(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
+        public static async void myadmintime(string[] args, IQueryClient sender, TS3QueryLib.Net.Core.Server.Notification.EventArgs.MessageReceivedEventArgs e)
         {
             List<AdminsTimeSpend.AdminsTimeModel> loadData = FileDataHelper.Read<List<AdminsTimeSpend.AdminsTimeModel>>("AdminsTimeSpend");
             uint databaseid = new ClientGetDbIdFromUIdCommand(e.InvokerUniqueId).Execute(sender).Values.First();
             AdminsTimeSpend.AdminsTimeModel admin = loadData.Where(x => x.AdminDatabaseId == databaseid).FirstOrDefault();
             if(admin != null)
             {
-                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "[b]Spędzony przez Ciebie czas:[/b]").ExecuteAsync(sender);
+                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "[b]Spędzony przez Ciebie czas:[/b]").ExecuteAsync(sender);
                 string info = $"[b]{admin.Nickname} ( {admin.AdminDatabaseId} )[/b] \n" +
                     $"Dziś: {admin.Time.Last().Time / 3600} godzin ({admin.Time.Last().Time / 60} minut) \n" +
                     $"Ostatnie 7 dni: {admin.Time.Skip(Math.Max(0, admin.Time.Count() - 7)).Sum(x => x.Time) / 3600} godzin \n" +
                     $"Ostatnie 30 dni: {admin.Time.Skip(Math.Max(0, admin.Time.Count() - 30)).Sum(x => x.Time) / 3600} godzin \n" +
                     $"Łącznie: {admin.Time.Sum(x => x.Time) / 3600} godzin \n";
-                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, info).ExecuteAsync(sender);
+                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, info).ExecuteAsync(sender);
             }
             else
             {
-                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Nie jesteś administratorem lub Twój czas nie jest liczony").ExecuteAsync(sender);
+                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, e.InvokerClientId, "Nie jesteś administratorem lub Twój czas nie jest liczony").ExecuteAsync(sender);
             }
            
 

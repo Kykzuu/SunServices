@@ -40,14 +40,14 @@ namespace SunServices.Functions
             return Task.CompletedTask;
         }
 
-        private void DoWork(object state)
+        private async void DoWork(object state)
         {
             EntityListCommandResponse<ClientListEntry> Users = new ClientListCommand().Execute(_client);
             IEnumerable<ClientListEntry> channelusers = Users.Values.Where(x => x.ChannelId == _contactchannelid);
             foreach(ClientListEntry client in channelusers)
             {
-                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, client.ClientId, "Cześć! Wpisz [b]pomoc[/b] by uzyskać liste wszystkich komend").ExecuteAsync(_client);
-                new ClientKickCommand(client.ClientId, TS3QueryLib.Net.Core.Common.Entities.KickReason.Channel).ExecuteAsync(_client);
+                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, client.ClientId, "Cześć! Wpisz [b]pomoc[/b] by uzyskać liste wszystkich komend").ExecuteAsync(_client);
+                await new ClientKickCommand(client.ClientId, TS3QueryLib.Net.Core.Common.Entities.KickReason.Channel).ExecuteAsync(_client);
             }
         }
 

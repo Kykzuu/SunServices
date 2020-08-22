@@ -53,7 +53,7 @@ namespace SunServices.Functions.ClansChannels
             return Task.CompletedTask;
         }
 
-        private void DoWork(object state)
+        private async void DoWork(object state)
         {
             EntityListCommandResponse<ClientListEntry> Users = new ClientListCommand(includeGroupInfo: true, includeUniqueId: true).Execute(_client);
             IEnumerable<ClientListEntry> clanschannelusers = Users.Values.Where(x => x.ChannelId == _createchannel);
@@ -84,7 +84,7 @@ namespace SunServices.Functions.ClansChannels
 
                 };
 
-                new ServerGroupAddClientCommand(ServerGroupCreatedId, clanschannelusers.First().ClientDatabaseId).ExecuteAsync(_client);
+                await new ServerGroupAddClientCommand(ServerGroupCreatedId, clanschannelusers.First().ClientDatabaseId).ExecuteAsync(_client);
                 string output = JsonConvert.SerializeObject(clanDataModel);
                 string datetime = ".KK_"+DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
 
@@ -112,7 +112,7 @@ namespace SunServices.Functions.ClansChannels
 
                     channels = new ChannelListCommand(includeAll: true, includeTopics: true).Execute(_client);
                     ChannelListEntry createdchannel = channels.Values.Where(x => x.Topic == datetime).First();
-                    new SetClientChannelGroupCommand(_clanadmingroup, createdchannel.ChannelId, clanschannelusers.First().ClientDatabaseId).ExecuteAsync(_client);
+                    await new SetClientChannelGroupCommand(_clanadmingroup, createdchannel.ChannelId, clanschannelusers.First().ClientDatabaseId).ExecuteAsync(_client);
 
                 new ChannelCreateCommand(
                     new ChannelModification
@@ -181,8 +181,8 @@ namespace SunServices.Functions.ClansChannels
                     }
                     ).Execute(_client);
 
-                new ChannelAddPermCommand(createdchannel.ChannelId, new NamedPermissionLight { Name = "i_channel_needed_modify_power", Value = 100 }).ExecuteAsync(_client);
-                    new ClientMoveCommand(clanschannelusers.First().ClientId, createdchannel.ChannelId).ExecuteAsync(_client);
+                await new ChannelAddPermCommand(createdchannel.ChannelId, new NamedPermissionLight { Name = "i_channel_needed_modify_power", Value = 100 }).ExecuteAsync(_client);
+                    await new ClientMoveCommand(clanschannelusers.First().ClientId, createdchannel.ChannelId).ExecuteAsync(_client);
                     _logger.LogInformation("[ClansChannelsCreate] Created clan channel for {0} ({1}) {2}", clanschannelusers.First().ClientUniqueId, clanschannelusers.First().Nickname, clanschannelusers.First().ClientIP);
             }
         }

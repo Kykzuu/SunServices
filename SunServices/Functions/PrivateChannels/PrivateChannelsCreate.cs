@@ -50,7 +50,7 @@ namespace SunServices.Functions.PrivateChannels
             return Task.CompletedTask;
         }
 
-        private void DoWork(object state)
+        private async void DoWork(object state)
         {
             EntityListCommandResponse<ClientListEntry> Users = new ClientListCommand(includeGroupInfo: true, includeUniqueId: true).Execute(_client);
             IEnumerable<ClientListEntry> privatechannelsusers = Users.Values.Where(x => x.ChannelId == _createchannel);
@@ -75,7 +75,7 @@ namespace SunServices.Functions.PrivateChannels
 
                     channels = new ChannelListCommand(includeAll: true, includeTopics: true).Execute(_client);
                     ChannelListEntry createdchannel = channels.Values.Where(x => x.Topic == channeltopic).First();
-                    new SetClientChannelGroupCommand(_channeladmingroup, createdchannel.ChannelId, privatechannelsusers.First().ClientDatabaseId).ExecuteAsync(_client);
+                    await new SetClientChannelGroupCommand(_channeladmingroup, createdchannel.ChannelId, privatechannelsusers.First().ClientDatabaseId).ExecuteAsync(_client);
                     for (int i = 1; i < _subchannels + 1; i++)
                     {
                         new ChannelCreateCommand(
@@ -88,14 +88,14 @@ namespace SunServices.Functions.PrivateChannels
                             }
                             ).Execute(_client);
                     }
-                    new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, privatechannelsusers.First().ClientId, _createchannelmessage).ExecuteAsync(_client);
-                    new ClientMoveCommand(privatechannelsusers.First().ClientId, createdchannel.ChannelId).ExecuteAsync(_client);
+                    await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, privatechannelsusers.First().ClientId, _createchannelmessage).ExecuteAsync(_client);
+                    await new ClientMoveCommand(privatechannelsusers.First().ClientId, createdchannel.ChannelId).ExecuteAsync(_client);
                     _logger.LogInformation("[PrivateChannels] Created private channel for {0} ({1}) {2}", privatechannelsusers.First().ClientUniqueId, privatechannelsusers.First().Nickname, privatechannelsusers.First().ClientIP);
                 }
                 else
                 {
-                    new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, privatechannelsusers.First().ClientId, "Posiadasz ju¿ jeden kana³ prywatny!").ExecuteAsync(_client);
-                    new ClientMoveCommand(privatechannelsusers.First().ClientId, channels.Values.Where(x => new GetDataFromTopic().UniqueId(x.Topic) == privatechannelsusers.First().ClientUniqueId).First().ChannelId).Execute(_client);
+                    await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, privatechannelsusers.First().ClientId, "Posiadasz ju¿ jeden kana³ prywatny!").ExecuteAsync(_client);
+                    await new ClientMoveCommand(privatechannelsusers.First().ClientId, channels.Values.Where(x => new GetDataFromTopic().UniqueId(x.Topic) == privatechannelsusers.First().ClientUniqueId).First().ChannelId).ExecuteAsync(_client);
                 }
             }
         }

@@ -41,14 +41,14 @@ namespace SunServices.Functions
             return Task.CompletedTask;
         }
 
-        private void DoWork(object state)
+        private async void DoWork(object state)
         {
             EntityListCommandResponse<ClientListEntry> Users = new ClientListCommand(includeAll: true).Execute(_client);
             IEnumerable<ClientListEntry> newusers = Users.Values.Where(x => x.ClientType == 0).Where(x => !x.ServerGroups.Any(x => x == _registergroupid)).Where(x => x.ClientCreated < DateTime.Now.AddSeconds(-_timetoregister));
             foreach (ClientListEntry client in newusers)
             {
-                new ServerGroupAddClientCommand(_registergroupid, client.ClientDatabaseId).ExecuteAsync(_client);
-                new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, client.ClientId, _registermessage).ExecuteAsync(_client);
+                await new ServerGroupAddClientCommand(_registergroupid, client.ClientDatabaseId).ExecuteAsync(_client);
+                await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, client.ClientId, _registermessage).ExecuteAsync(_client);
                 _logger.LogInformation("[RegisterUser] Registered user {0} ({1}) {2}", client.ClientUniqueId, client.Nickname, client.ClientIP);
             }
         }

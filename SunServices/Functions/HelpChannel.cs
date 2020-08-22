@@ -48,7 +48,7 @@ namespace SunServices.Functions
             return Task.CompletedTask;
         }
 
-        private void DoWork(object state)
+        private async void DoWork(object state)
         {
             EntityListCommandResponse<ClientListEntry> Users = new ClientListCommand(includeGroupInfo: true).Execute(_client);
             IEnumerable<ClientListEntry> helpchannelusers = Users.Values.Where(x => x.ChannelId == _helpchannelid);
@@ -61,13 +61,13 @@ namespace SunServices.Functions
                     {
                         if (!admin.Nickname.Contains(_afksymbol))
                         {
-                            new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, admin.ClientId, _adminmessage).ExecuteAsync(_client);
+                            await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, admin.ClientId, _adminmessage).ExecuteAsync(_client);
                         }
                     }
                     _logger.LogInformation("[HelpChannel] Sended notification to admins {0} for {1}", String.Join(",", adminsonline.Select(x => x.Nickname)), helpchannelusers.First().Nickname);
                     foreach (ClientListEntry client in helpchannelusers)
                     {
-                        new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, client.ClientId, _usermessage).ExecuteAsync(_client);
+                        await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, client.ClientId, _usermessage).ExecuteAsync(_client);
                     }
                     _logger.LogInformation("[HelpChannel] Sended notification to user {0}", helpchannelusers.First().Nickname);
                 }
@@ -75,7 +75,7 @@ namespace SunServices.Functions
                 {
                     foreach (ClientListEntry client in helpchannelusers)
                     {
-                        new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, client.ClientId, _userofflineadmin).ExecuteAsync(_client);
+                        await new SendTextMessageCommand(TS3QueryLib.Net.Core.Common.CommandHandling.MessageTarget.Client, client.ClientId, _userofflineadmin).ExecuteAsync(_client);
                     }
                     _logger.LogInformation("[HelpChannel] Sended notification to user {0}", helpchannelusers.First().Nickname);
                 }

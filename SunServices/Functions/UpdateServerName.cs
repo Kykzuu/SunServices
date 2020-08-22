@@ -40,11 +40,11 @@ namespace SunServices.Functions
             return Task.CompletedTask;
         }
 
-        private void DoWork(object state)
+        private async void DoWork(object state)
         {
             EntityListCommandResponse<ClientListEntry> Users = new ClientListCommand().Execute(_client);
             ServerInfoCommandResponse ServerInfo = new ServerInfoCommand().Execute(_client);
-            new ServerEditCommand(new VirtualServerModification { Name = String.Format("{0} [{1}/{2}]", _servername, Users.Values.Where(x => x.ClientType == 0).Count(), ServerInfo.MaximumClientsAllowed) }).ExecuteAsync(_client);
+            await new ServerEditCommand(new VirtualServerModification { Name = String.Format("{0} [{1}/{2}]", _servername, Users.Values.Where(x => x.ClientType == 0).Count(), ServerInfo.MaximumClientsAllowed) }).ExecuteAsync(_client);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

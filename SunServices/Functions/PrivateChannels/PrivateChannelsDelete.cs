@@ -37,7 +37,7 @@ namespace SunServices.Functions.PrivateChannels
             return Task.CompletedTask;
         }
 
-        private void DoWork(object state)
+        private async void DoWork(object state)
         {
             IEnumerable<ChannelListEntry> AllChannels = new ChannelListCommand(includeAll: true, includeTopics: true).Execute(_client).Values; ;
             IEnumerable<ChannelListEntry> Channels = AllChannels.Where(x => x.ParentChannelId == _privatezonechannelid);
@@ -46,7 +46,7 @@ namespace SunServices.Functions.PrivateChannels
                 DateTimeOffset time = new GetDataFromTopic().Time(channel.Topic);
                 if (DateTimeOffset.Now > time && time.Second != 0)
                 {
-                    new ChannelDeleteCommand(channel.ChannelId).Execute(_client);
+                    await new ChannelDeleteCommand(channel.ChannelId).ExecuteAsync(_client);
                     _logger.LogInformation("[PrivateChannels] Deleted channel {0} ({1})", channel.ChannelId, channel.Name);
                 }
             }

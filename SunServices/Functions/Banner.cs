@@ -24,7 +24,6 @@ namespace SunServices.Functions
         private List<Single> _pingTextLocationList;
         private List<Single> _onlineLocationList;
         private List<Single> _pingLocationList;
-        private bool _enabled;
 
         public Banner(ILogger<Banner> logger, IQueryClient client, IConfiguration configuration)
         {
