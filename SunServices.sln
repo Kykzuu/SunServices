@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SunServices", "SunServices\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SunServices.Tests", "SunServices.Tests\SunServices.Tests.csproj", "{3D318C9C-EC5F-4109-9554-A22D27100EDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SunServices.Restapi", "SunServices.Restapi\SunServices.Restapi.csproj", "{4A70CC2F-16EB-47C4-9D38-65221FB17DCB}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{3D318C9C-EC5F-4109-9554-A22D27100EDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D318C9C-EC5F-4109-9554-A22D27100EDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D318C9C-EC5F-4109-9554-A22D27100EDD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A70CC2F-16EB-47C4-9D38-65221FB17DCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A70CC2F-16EB-47C4-9D38-65221FB17DCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4A70CC2F-16EB-47C4-9D38-65221FB17DCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A70CC2F-16EB-47C4-9D38-65221FB17DCB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
