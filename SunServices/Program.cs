@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using SunServices.Functions;
 using SunServices.Functions.ClansChannels;
 using SunServices.Functions.PrivateChannels;
+using SunServices.Functions.ServerStatsToDB;
 using SunServices.Helpers;
 using TS3QueryLib.Net.Core;
 using TS3QueryLib.Net.Core.Server.Commands;
@@ -39,6 +40,7 @@ namespace SunServices
                 _ = !new UseCommand(ushort.Parse(Configuration.GetSection("ServerQuery")["ServerPort"])).Execute(client).IsErroneous;
                 _ = new ClientUpdateCommand(new TS3QueryLib.Net.Core.Server.Entitities.ClientModification { Nickname = "SunService" }).Execute(client);
                 _ = new ServerNotifyRegisterCommand(ServerNotifyRegisterEvent.TextPrivate).Execute(client);
+
                 CreateHostBuilder(args, client, Configuration).Build().Run();
             }
             catch (Exception err)
@@ -115,6 +117,12 @@ namespace SunServices
                     if (configuration.GetSection("UpdateServerName:Enabled").Get<bool>())
                     {
                         services.AddHostedService<UpdateServerName>();
+                    }
+
+                    //Statystyki do bazy danych
+                    if (configuration.GetSection("ServerStatsToDB:Enabled").Get<bool>())
+                    {
+                        services.AddHostedService<ServerStatsToDB>();
                     }
                 })
                 .ConfigureLogging(logging =>
