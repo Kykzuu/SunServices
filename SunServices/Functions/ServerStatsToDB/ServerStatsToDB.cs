@@ -82,27 +82,31 @@ namespace SunServices.Functions.ServerStatsToDB
                 ClansChannelsUsers += users.Count(x => x.ServerGroups.Any(x => x == clanData.GroupID));
             }
 
+            DateTimeOffset dateTimeOffset = DateTimeOffset.Now;
+            System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+            customCulture.NumberFormat.NumberDecimalSeparator = ".";
+            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+
+            IServerStatsToDB statsToDB = null;
+
             if (_provider.ToLower().Contains("mysql"))
             {
-                DateTimeOffset dateTimeOffset = DateTimeOffset.Now;
-                System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
-                customCulture.NumberFormat.NumberDecimalSeparator = ".";
-                System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
-
-                new MySQL().PlayersOnline(playersOnline, dateTimeOffset, _connString);
-                new MySQL().QueryClientsOnline(queryClientsOnline, dateTimeOffset, _connString);
-                new MySQL().PrivateChannels(privateChannels, dateTimeOffset, _connString);
-                new MySQL().PrivateChannelsUsers(privateChannelsUsers, dateTimeOffset, _connString);
-                new MySQL().ClansChannels(ClansChannels, dateTimeOffset, _connString);
-                new MySQL().ClansChannelsUsers(ClansChannelsUsers, dateTimeOffset, _connString);
-                new MySQL().AdminsOnline(adminsOnline, dateTimeOffset, _connString);
-                new MySQL().AveragePing(averagePing, dateTimeOffset, _connString);
-                new MySQL().AveragePacketLoss(averagePacketLoss, dateTimeOffset, _connString);
-                new MySQL().BandwidthSent(BandwidthSent, dateTimeOffset, _connString);
-                new MySQL().BandwidthReceived(BandwidthReceived, dateTimeOffset, _connString);
-                new MySQL().Channels(channels, dateTimeOffset, _connString);
-
+                statsToDB = new MySQL();
             }
+
+            statsToDB.PlayersOnline(playersOnline, dateTimeOffset, _connString);
+            statsToDB.QueryClientsOnline(queryClientsOnline, dateTimeOffset, _connString);
+            statsToDB.PrivateChannels(privateChannels, dateTimeOffset, _connString);
+            statsToDB.PrivateChannelsUsers(privateChannelsUsers, dateTimeOffset, _connString);
+            statsToDB.ClansChannels(ClansChannels, dateTimeOffset, _connString);
+            statsToDB.ClansChannelsUsers(ClansChannelsUsers, dateTimeOffset, _connString);
+            statsToDB.AdminsOnline(adminsOnline, dateTimeOffset, _connString);
+            statsToDB.AveragePing(averagePing, dateTimeOffset, _connString);
+            statsToDB.AveragePacketLoss(averagePacketLoss, dateTimeOffset, _connString);
+            statsToDB.BandwidthSent(BandwidthSent, dateTimeOffset, _connString);
+            statsToDB.BandwidthReceived(BandwidthReceived, dateTimeOffset, _connString);
+            statsToDB.Channels(channels, dateTimeOffset, _connString);
+
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
